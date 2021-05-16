@@ -1,4 +1,5 @@
 module.exports = {
-  DB_URL: "mongodb://localhost:27017/musichouse",
+  port: 1777,
+  DB_URL: "mongodb://localhost:27017/interspace",
   corsHost: "http://localhost:3000"
 }
