@@ -1,11 +1,10 @@
 const { DB_URL } = require('./config');
 const mongoose = require('mongoose');
-mongoose.connect(DB_URL)
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.on('connected', function () {
+mongoose.connect(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true }, function () {
   console.log(`已连接数据库${DB_URL}`)
 })
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
 
 var article = new mongoose.Schema({
   articleid: String,
@@ -13,7 +12,9 @@ var article = new mongoose.Schema({
   authorId: String,
   authorName: String,
   time: String,
-  tag: Array
+  tag: Array,
+  viewNum: String,
+  commentList: Array
 });
 var author = new mongoose.Schema({
   password: String,
@@ -31,11 +32,11 @@ var author = new mongoose.Schema({
   articleDynamic: Array,
   personalDynamic: Array
 });
-var rankArticle = new mongoose.Schema({
+var rank = new mongoose.Schema({
   articleId: String,
   articleTitle: String
 });
 var Article = mongoose.model('article', article);
 var Author = mongoose.model('author', author);
-var RankArticle = mongoose.model('rankarticle', rankArticle);
-module.exports = {mongoose,Article,Author,RankArticle}
+var Rank = mongoose.model('rank', rank);
+module.exports = { mongoose, Article, Author, Rank }
