@@ -1,9 +1,9 @@
 const express = require('express');
 const route = express.Router();
-const { Article, Author } = require('../conf/connectDB')
+const { Article, Author } = require('../conf/connectDB');
 const fs = require('fs');
 const bodyParser = require('../conf/bodyParser');
-bodyParser(route)
+bodyParser(route);
 
 route.get('/:articleId', (req, res) => {
   Article.findOne({ articleId: req.params.articleId }, (err, data) => {
