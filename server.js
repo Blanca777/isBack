@@ -16,8 +16,7 @@ const routes = require('./routes');
 const app = express();
 cors(app);
 routes(app);
-
-
+app.use(express.static(path.join(__dirname, 'resources')))
 
 app.listen(1777, function () {
   console.log(`node app start at port http://localhost:${port}`)

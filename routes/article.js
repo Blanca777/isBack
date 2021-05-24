@@ -12,8 +12,8 @@ route.get('/:articleId', (req, res) => {
   })
 })
 route.get('/md/:articleId', (req, res) => {
-  fs.readFile(`./resources/${req.params.articleId}.md`, 'utf-8', (err, data) => {
-    if (err) return
+  fs.readFile(`./resources/article/${req.params.articleId}.md`, 'utf-8', (err, data) => {
+    if (err) return console.log(err)
     res.status(200).send(data)
   });
 })
