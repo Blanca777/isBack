@@ -7,13 +7,13 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 
 var article = new mongoose.Schema({
-  articleid: String,
+  articleId: String,
   articleTitle: String,
   authorId: String,
   authorName: String,
   time: String,
-  tag: Array,
   viewNum: String,
+  tag: Array,
   commentList: Array
 });
 var author = new mongoose.Schema({
@@ -29,8 +29,7 @@ var author = new mongoose.Schema({
   tag: Array,
   fLink: Array,
   personalDynamic: Array,
-  articleDynamic: Array,
-  personalDynamic: Array
+  articleDynamic: Array
 });
 var rank = new mongoose.Schema({
   articleId: String,

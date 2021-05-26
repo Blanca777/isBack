@@ -25,29 +25,53 @@ route.get('/author/:authorId', (req, res) => {
 
 })
 route.post('/addComment', (req, res) => {
-  const id = new Date().getTime()
+  const commentCreate = new Date()
+  let commentId = "comment_" + commentCreate.getTime()
+  let commentDate = commentCreate.toLocaleString()
   let { articleId, authorId, authorName, commentText } = req.body
   const data = {
-    commentArticleId: articleId,
-    commentId: "comment" + id,
+    commentId: commentId,
     commentAuthorName: authorName,
     commentAuthorId: authorId,
     commentText: commentText,
+    commentDate: commentDate,
     replyList: []
   }
-  Article.updateOne({ articleId: articleId }, {
+  Article.findOneAndUpdate({ articleId: articleId }, {
     $push: {
       commentList: {
         $each: [data],
         $position: 0
       }
     }
-  }, (err, data) => {
+  }, { new: true }, (err, data) => {
     if (err) return res.status(503).send('err')
-    Article.findOne({ articleId: articleId }, (err, data) => {
-      if (err) return res.status(201).send('重新刷新页面')
-      res.status(201).send(data)
-    })
+    res.status(201).send(data)
+  })
+
+})
+route.post('/addReply', (req, res) => {
+  const replyCreate = new Date()
+  let replyId = "reply_" + replyCreate.getTime()
+  let replyDate = replyCreate.toLocaleString()
+  let { replyText, authorId, authorName, articleId, commentId } = req.body
+  const data = {
+    replyId: replyId,
+    replyAuthorName: authorName,
+    replyAuthorId: authorId,
+    replyText: replyText,
+    replyDate: replyDate
+  }
+  // console.log(data)
+  Article.findOneAndUpdate({ "commentList.commentId": commentId }, {
+    $push: {
+      "commentList.$.replyList": {
+        $each: [data]
+      }
+    }
+  }, { new: true }, (err, data) => {
+    if (err) return res.status(503).send('err')
+    res.status(201).send(data)
   })
 
 })
