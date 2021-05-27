@@ -18,6 +18,6 @@ cors(app);
 routes(app);
 app.use(express.static(path.join(__dirname, 'resources')))
 
-app.listen(1777, function () {
+app.listen(port, function () {
   console.log(`node app start at port http://localhost:${port}`)
 })
