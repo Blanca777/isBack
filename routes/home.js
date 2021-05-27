@@ -5,14 +5,12 @@ const { Article, Rank } = require('../conf/connectDB')
 route.get('/articleList', (req, res) => {
   Article.find({},(err,data)=>{
     if(err) return 
-    console.log(req.hostname,'获取articleList')
     res.status(200).send(data)
   })
 })
 route.get('/rankList', (req, res) => {
   Rank.find({},(err,data)=>{
     if(err) return 
-    console.log(req.hostname,'获取rankList')
     res.status(200).send(data)
   })
 })

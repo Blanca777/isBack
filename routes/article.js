@@ -62,7 +62,6 @@ route.post('/addReply', (req, res) => {
     replyText: replyText,
     replyDate: replyDate
   }
-  // console.log(data)
   Article.findOneAndUpdate({ "commentList.commentId": commentId }, {
     $push: {
       "commentList.$.replyList": {

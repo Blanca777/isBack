@@ -5,8 +5,6 @@ const bodyParser = require('../conf/bodyParser');
 bodyParser(route);
 route.post('/login', (req, res) => {
   let { username, password } = req.body
-  console.log(req.ip)
-  console.log(username, password)
   Author.findOne({ username, password }, (err, data) => {
     if (err) return
     if (data === null) {
@@ -20,6 +18,13 @@ route.post('/login', (req, res) => {
       })
     }
 
+  })
+})
+route.post('/longLogin', (req, res) => {
+  let { authorId } = req.body
+  Author.findOne({ authorId }, (err, data) => {
+    if (err) return
+    res.status(200).send(data)
   })
 })
 module.exports = route

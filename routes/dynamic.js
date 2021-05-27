@@ -16,22 +16,20 @@ route.get('/:authorId', (req, res) => {
     });
 })
 route.post('/addArticleDynamic', multipartyMiddleware, (req, res) => {
-  let time = new Date()
-  let fileName = time.getTime()
-  let year = time.getFullYear()
-  let month = time.getMonth() + 1
-  let date = time.getDate()
+  let articleCreate = new Date()
+  let articleId = "ad_" + articleCreate.getTime()
+  let publishTime = articleCreate.toLocaleDateString()
   let fileExtension = req.files.file.name.substring(req.files.file.name.lastIndexOf("."))
   let fileReader = fs.createReadStream(req.files.file.path)
-  let fileWriter = fs.createWriteStream(path.join(__dirname, '../resources/article', `ad_${fileName}${fileExtension}`));
+  let fileWriter = fs.createWriteStream(path.join(__dirname, '../resources/article', `${articleId}${fileExtension}`));
   fileReader.pipe(fileWriter);
   let { title, authorId, authorName, tag1, tag2 } = req.body
   Article.create({
-    articleId: "ad_" + fileName,
+    articleId,
     articleTitle: title,
-    authorId: authorId,
-    authorName: authorName,
-    time: `${year}-${month}-${date}`,
+    authorId,
+    authorName,
+    publishTime,
     tag: [tag1, tag2],
     viewNum: "0",
     commentList: []
@@ -41,21 +39,16 @@ route.post('/addArticleDynamic', multipartyMiddleware, (req, res) => {
         $push: {
           articleDynamic: {
             $each: [{
-              articleId: "ad_" + fileName,
-              dynamicTime: `${year}-${month}-${date}`,
+              articleId,
+              dynamicTime: publishTime,
               dynamicText: title
             }],
             $position: 0
           }
         }
-      }, (err, doc) => {
-        if (!err) {
-          console.log('数据库更新成功')
-          res.status(200).send('succ')
-        } else {
-          console.log('数据库更新失败', err)
-          res.status(413).send('err')
-        }
+      },{new: true},(err, data) => {
+        if (err) res.status(413).send('err')
+        res.status(201).send(data)
       })
     } else {
       console.log('数据库更新失败', err)
@@ -64,17 +57,16 @@ route.post('/addArticleDynamic', multipartyMiddleware, (req, res) => {
   })
 })
 route.post('/addPersonalDynamic', (req, res) => {
-  let time = new Date()
-  let personalId = time.getTime()
-  let year = time.getFullYear()
-  let month = time.getMonth() + 1
-  let date = time.getDate()
+  let personalCreate = new Date()
+  let personalId = 'pd_' + personalCreate.getTime()
+  let dynamicTime = personalCreate.toLocaleString()
+  let { dynamicText, authorId } = req.body
   let data = {
-    personalId: 'pd_' + personalId,
-    dynamicTime: `${year}-${month}-${date}`,
-    dynamicText: req.body.dynamicText
+    personalId,
+    dynamicTime,
+    dynamicText
   }
-  Author.findOneAndUpdate({ authorId: req.body.authorId }, {
+  Author.findOneAndUpdate({ authorId }, {
     $push: {
       personalDynamic: {
         $each: [data],
