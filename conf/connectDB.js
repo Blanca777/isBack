@@ -21,15 +21,42 @@ var author = new mongoose.Schema({
   username: String,
   authorId: String,
   authorName: String,
-  authorImg: String,
-  articleNum: Number,
-  tagNum: Number,
-  visiteNum: Number,
-  category: Array,
-  tag: Array,
-  fLink: Array,
-  personalDynamic: Array,
-  articleDynamic: Array
+  authorImg: {
+    type: String,
+    default: "http://blanca777.cn:1777/author/base/spaceman.png"
+  },
+  articleNum: {
+    type: Number,
+    default: 0
+  },
+  tagNum: {
+    type: Number,
+    default: 0
+  },
+  visiteNum: {
+    type: Number,
+    default: 0
+  },
+  category: {
+    type: Array,
+    default: []
+  },
+  tag: {
+    type: Array,
+    default: []
+  },
+  fLink: {
+    type: Array,
+    default: []
+  },
+  personalDynamic: {
+    type: Array,
+    default: []
+  },
+  articleDynamic: {
+    type: Array,
+    default: []
+  }
 });
 var rank = new mongoose.Schema({
   articleId: String,
