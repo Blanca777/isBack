@@ -13,7 +13,10 @@ var article = new mongoose.Schema({
   authorId: String,
   authorName: String,
   publishTime: String,
-  viewNum: String,
+  viewNum: {
+    type: Number,
+    default: 0
+  },
   tag: Array,
   commentList: Array
 });

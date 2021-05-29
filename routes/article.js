@@ -6,15 +6,22 @@ const bodyParser = require('../conf/bodyParser');
 bodyParser(route);
 
 route.get('/:articleId', (req, res) => {
-  Article.findOne({ articleId: req.params.articleId }, (err, data) => {
-    if (err) return
+  Article.findOneAndUpdate({ articleId: req.params.articleId },{
+    $inc: {
+      viewNum: 1
+    }
+  },(err, data) => {
+    if(err) res.status(500).send('err')
     res.status(200).send(data)
   })
 })
 route.get('/md/:articleId', (req, res) => {
   fs.readFile(`./resources/article/${req.params.articleId}.md`, 'utf-8', (err, data) => {
-    if (err) return console.log(err)
-    res.status(200).send(data)
+    if (err) {
+      res.status(500).send('err')
+    } else {
+      res.status(200).send(data)
+    }
   });
 })
 route.get('/author/:authorId', (req, res) => {
