@@ -38,7 +38,6 @@ route.post('/signup', (req, res) => {
         username,
         password
       },(err,data)=>{
-        console.log(data)
         res.status(200).send("注册成功")
       })
     }else {
