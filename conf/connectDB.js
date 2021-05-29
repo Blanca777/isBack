@@ -1,5 +1,6 @@
 const { DB_URL } = require('./config');
 const mongoose = require('mongoose');
+mongoose.set('useFindAndModify', false)
 mongoose.connect(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true }, function () {
   console.log(`已连接数据库${DB_URL}`)
 })
@@ -11,7 +12,7 @@ var article = new mongoose.Schema({
   articleTitle: String,
   authorId: String,
   authorName: String,
-  time: String,
+  publishTime: String,
   viewNum: String,
   tag: Array,
   commentList: Array
@@ -29,7 +30,7 @@ var author = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  tagNum: {
+  personalNum: {
     type: Number,
     default: 0
   },

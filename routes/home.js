@@ -3,7 +3,7 @@ const route = express.Router();
 const { Article, Rank } = require('../conf/connectDB')
 
 route.get('/articleList', (req, res) => {
-  Article.find({},(err,data)=>{
+  Article.find({}).sort({_id: -1}).exec((err,data)=>{
     if(err) return 
     res.status(200).send(data)
   })

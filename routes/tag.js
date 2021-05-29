@@ -5,6 +5,7 @@ const bodyParser = require('../conf/bodyParser');
 bodyParser(route);
 route.get('/articleList', (req, res) => {
   Article.find({})
+  .sort({_id: -1})
   .select('articleId articleTitle tag authorId time authorName')
   .exec((err,data)=>{
     res.status(200).send(data)

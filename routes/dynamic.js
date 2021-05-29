@@ -10,10 +10,14 @@ const multipartyMiddleware = multiparty();
 
 
 route.get('/:authorId', (req, res) => {
-  Author.findOne({ authorId: req.params.authorId })
-    .exec((err, data) => {
-      res.status(200).send(data)
-    });
+  Author.findOneAndUpdate({ authorId: req.params.authorId },{
+    $inc: {
+      visiteNum: 1
+    }
+  },(err, data) => {
+    if(err) res.status(500).send('err')
+    res.status(200).send(data)
+  })
 })
 route.post('/addArticleDynamic', multipartyMiddleware, (req, res) => {
   let articleCreate = new Date()
@@ -36,6 +40,9 @@ route.post('/addArticleDynamic', multipartyMiddleware, (req, res) => {
   }, (err, doc) => {
     if (!err) {
       Author.findOneAndUpdate({ authorId: authorId }, {
+        $inc: {
+          articleNum: 1
+        },
         $push: {
           articleDynamic: {
             $each: [{
@@ -46,7 +53,7 @@ route.post('/addArticleDynamic', multipartyMiddleware, (req, res) => {
             $position: 0
           }
         }
-      },{new: true},(err, data) => {
+      }, { new: true }, (err, data) => {
         if (err) res.status(413).send('err')
         res.status(201).send(data)
       })
@@ -67,6 +74,9 @@ route.post('/addPersonalDynamic', (req, res) => {
     dynamicText
   }
   Author.findOneAndUpdate({ authorId }, {
+    $inc: {
+      personalNum: 1
+    },
     $push: {
       personalDynamic: {
         $each: [data],
@@ -78,4 +88,5 @@ route.post('/addPersonalDynamic', (req, res) => {
     res.status(201).send(data)
   })
 })
+
 module.exports = route
