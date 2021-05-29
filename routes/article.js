@@ -2,6 +2,7 @@ const express = require('express');
 const route = express.Router();
 const { Article, Author } = require('../conf/connectDB');
 const fs = require('fs');
+const path = require('path');
 const bodyParser = require('../conf/bodyParser');
 bodyParser(route);
 
@@ -16,12 +17,9 @@ route.get('/:articleId', (req, res) => {
   })
 })
 route.get('/md/:articleId', (req, res) => {
-  fs.readFile(`./resources/article/${req.params.articleId}.md`, 'utf-8', (err, data) => {
-    if (err) {
-      res.status(500).send('err')
-    } else {
-      res.status(200).send(data)
-    }
+  fs.readFile(path.join(__dirname,`../resources/article/${req.params.articleId}.md`), 'utf-8', (err, data) => {
+    if(err) res.status(500).send(err)
+    res.status(200).send(data)
   });
 })
 route.get('/author/:authorId', (req, res) => {
