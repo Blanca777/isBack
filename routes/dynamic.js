@@ -10,12 +10,12 @@ const multipartyMiddleware = multiparty();
 
 
 route.get('/:authorId', (req, res) => {
-  Author.findOneAndUpdate({ authorId: req.params.authorId },{
+  Author.findOneAndUpdate({ authorId: req.params.authorId }, {
     $inc: {
       visiteNum: 1
     }
-  },(err, data) => {
-    if(err) res.status(500).send('err')
+  }, (err, data) => {
+    if (err) res.status(500).send('err')
     res.status(200).send(data)
   })
 })
@@ -28,39 +28,71 @@ route.post('/addArticleDynamic', multipartyMiddleware, (req, res) => {
   let fileWriter = fs.createWriteStream(path.join(__dirname, '../resources/article', `${articleId}${fileExtension}`));
   fileReader.pipe(fileWriter);
   let { title, authorId, authorName, tag1, tag2 } = req.body
+  let tag
+  if (tag1 === "语言" && tag2 === "类别") {
+    tag = []
+  } else if (tag1 === "语言" && tag2 !== "类别") {
+    tag = [tag2]
+  } else if (tag1 !== "语言" && tag2 === "类别") {
+    tag = [tag1]
+  } else if (tag1 !== "语言" && tag2 !== "类别") {
+    tag = [tag1, tag2]
+  }
   Article.create({
     articleId,
     articleTitle: title,
     authorId,
     authorName,
     publishTime,
-    tag: [tag1, tag2],
-    viewNum: "0",
+    tag,
     commentList: []
   }, (err, doc) => {
-    if (!err) {
-      Author.findOneAndUpdate({ authorId: authorId }, {
-        $inc: {
-          articleNum: 1
-        },
-        $push: {
-          articleDynamic: {
-            $each: [{
-              articleId,
-              dynamicTime: publishTime,
-              dynamicText: title
-            }],
-            $position: 0
-          }
+    if (err) res.status(413).send(err)
+    Author.findOneAndUpdate({ authorId: authorId }, {
+      $inc: {
+        articleNum: 1
+      },
+      $push: {
+        articleDynamic: {
+          $each: [{
+            articleId,
+            dynamicTime: publishTime,
+            dynamicText: title
+          }],
+          $position: 0
         }
-      }, { new: true }, (err, data) => {
-        if (err) res.status(413).send('err')
-        res.status(201).send(data)
-      })
-    } else {
-      console.log('数据库更新失败', err)
-      res.status(413).send('err')
-    }
+      }
+    }, { new: true }, (err, data) => {
+      if (err) res.status(500).send(err)
+      tag.map((item, index) => {
+        Author.findOneAndUpdate({ authorId: authorId, "category.categoryName": item }, {
+          $inc: {
+            "category.$.articleNum": 1
+          }
+        }, { new: true }, (err, data) => {
+          if (err) res.status(500).send(err)
+          if (data == null) {
+            Author.findOneAndUpdate({ authorId: "blanca" }, {
+              $push: {
+                category: {
+                  $each: [{
+                    categoryName: item,
+                    articleNum: 1
+                  }]
+                }
+              }
+            }, { new: true }, (err, data) => {
+              if (err) res.status(500).send(err)
+              if (index === tag.length - 1) {
+                console.log(data)
+                res.status(200).send(data)
+              }
+            })
+          }
+          res.status(200).send(data)
+        })
+      });
+    })
   })
 })
 route.post('/addPersonalDynamic', (req, res) => {

@@ -9,7 +9,8 @@ route.post('/login', (req, res) => {
     if (err) return
     if (data === null) {
       res.status(200).send({
-        loginStatus: "error"
+        loginStatus: "error",
+        reason: "该用户没有注册或者密码错误"
       })
     } else {
       res.status(200).send({

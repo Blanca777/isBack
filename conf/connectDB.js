@@ -62,11 +62,7 @@ var author = new mongoose.Schema({
     default: []
   }
 });
-var rank = new mongoose.Schema({
-  articleId: String,
-  articleTitle: String
-});
+
 var Article = mongoose.model('article', article);
 var Author = mongoose.model('author', author);
-var Rank = mongoose.model('rank', rank);
-module.exports = { mongoose, Article, Author, Rank }
+module.exports = { mongoose, Article, Author }
