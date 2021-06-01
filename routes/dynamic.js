@@ -29,13 +29,13 @@ route.post('/addArticleDynamic', multipartyMiddleware, (req, res) => {
   fileReader.pipe(fileWriter);
   let { title, authorId, authorName, tag1, tag2 } = req.body
   let tag
-  if (tag1 === "语言" && tag2 === "类别") {
+  if (tag1 === "领域类型" && tag2 === "编程语言") {
     tag = []
-  } else if (tag1 === "语言" && tag2 !== "类别") {
+  } else if (tag1 === "领域类型" && tag2 !== "编程语言") {
     tag = [tag2]
-  } else if (tag1 !== "语言" && tag2 === "类别") {
+  } else if (tag1 !== "领域类型" && tag2 === "编程语言") {
     tag = [tag1]
-  } else if (tag1 !== "语言" && tag2 !== "类别") {
+  } else if (tag1 !== "领域类型" && tag2 !== "编程语言") {
     tag = [tag1, tag2]
   }
   Article.create({
