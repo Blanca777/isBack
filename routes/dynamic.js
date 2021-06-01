@@ -72,7 +72,7 @@ route.post('/addArticleDynamic', multipartyMiddleware, (req, res) => {
         }, { new: true }, (err, data) => {
           if (err) res.status(500).send(err)
           if (data == null) {
-            Author.findOneAndUpdate({ authorId: "blanca" }, {
+            Author.findOneAndUpdate({ authorId: authorId }, {
               $push: {
                 category: {
                   $each: [{
@@ -84,12 +84,15 @@ route.post('/addArticleDynamic', multipartyMiddleware, (req, res) => {
             }, { new: true }, (err, data) => {
               if (err) res.status(500).send(err)
               if (index === tag.length - 1) {
-                console.log(data)
                 res.status(200).send(data)
               }
             })
+          } else {
+            if (index === tag.length - 1) {
+              res.status(200).send(data)
+            }
           }
-          res.status(200).send(data)
+
         })
       });
     })
