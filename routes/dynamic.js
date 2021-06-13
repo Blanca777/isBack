@@ -1,6 +1,6 @@
 const express = require('express');
 const route = express.Router();
-const { Article, Author } = require('../conf/connectDB');
+const { Article, Author, Channel } = require('../conf/connectDB');
 const fs = require('fs');
 const path = require('path');
 const bodyParser = require('../conf/bodyParser');
@@ -14,7 +14,9 @@ route.get('/:authorId', (req, res) => {
     $inc: {
       visiteNum: 1
     }
-  }, (err, data) => {
+  })
+  .select("-password -username")
+  .exec((err, data) => {
     if (err) res.status(500).send('err')
     res.status(200).send(data)
   })
@@ -22,7 +24,7 @@ route.get('/:authorId', (req, res) => {
 route.post('/addArticleDynamic', multipartyMiddleware, (req, res) => {
   let articleCreate = new Date()
   let articleId = "ad_" + articleCreate.getTime()
-  let publishTime = articleCreate.toLocaleDateString()
+  let publishTime = articleCreate.getTime()
   let fileExtension = req.files.file.name.substring(req.files.file.name.lastIndexOf("."))
   let fileReader = fs.createReadStream(req.files.file.path)
   let fileWriter = fs.createWriteStream(path.join(__dirname, '../resources/article', `${articleId}${fileExtension}`));
@@ -101,7 +103,7 @@ route.post('/addArticleDynamic', multipartyMiddleware, (req, res) => {
 route.post('/addPersonalDynamic', (req, res) => {
   let personalCreate = new Date()
   let personalId = 'pd_' + personalCreate.getTime()
-  let dynamicTime = personalCreate.toLocaleString()
+  let dynamicTime = personalCreate.getTime()
   let { dynamicText, authorId } = req.body
   let data = {
     personalId,
@@ -124,4 +126,27 @@ route.post('/addPersonalDynamic', (req, res) => {
   })
 })
 
+route.post('/deleteDynamicItem', (req, res) => {
+  const {authorId, dynamicId} = req.body;
+  Author.findOneAndUpdate({authorId}, {
+    $pull: {
+      personalDynamic:{
+        personalId: dynamicId
+      },
+      articleDynamic:{
+        articleId: dynamicId
+      }
+    }
+  }, { new: true })
+  .select('-password -username')
+  .exec((err, data) => {
+    if (err) return res.status(503).send('err')
+    Article.deleteOne({articleId: dynamicId},(err)=>{
+      if(err) return res.status(500).send('err')
+      res.status(200).send(data)
+    })
+  })
+
+  
+})
 module.exports = route

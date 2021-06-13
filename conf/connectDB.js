@@ -12,7 +12,7 @@ var article = new mongoose.Schema({
   articleTitle: String,
   authorId: String,
   authorName: String,
-  publishTime: String,
+  publishTime: Number,
   viewNum: {
     type: Number,
     default: 0
@@ -62,7 +62,22 @@ var author = new mongoose.Schema({
     default: []
   }
 });
-
+var channel = new mongoose.Schema({
+  speechId: String,
+  speechContent: String,
+  authorId: String,
+  authorName: String,
+  publishTime: Number,
+  likeNum: {
+    type: Number,
+    default: 0
+  },
+  commentList: {
+    type: Array,
+    default: []
+  }
+});
 var Article = mongoose.model('article', article);
 var Author = mongoose.model('author', author);
-module.exports = { mongoose, Article, Author }
+var Channel = mongoose.model('channel', channel);
+module.exports = { mongoose, Article, Author, Channel }
