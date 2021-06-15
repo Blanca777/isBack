@@ -128,25 +128,49 @@ route.post('/addPersonalDynamic', (req, res) => {
 
 route.post('/deleteDynamicItem', (req, res) => {
   const {authorId, dynamicId} = req.body;
-  Author.findOneAndUpdate({authorId}, {
-    $pull: {
-      personalDynamic:{
-        personalId: dynamicId
+  if(dynamicId.slice(0,2)==="ad"){
+    Author.findOneAndUpdate({authorId}, {
+      $pull: {
+        articleDynamic:{
+          articleId: dynamicId
+        }
       },
-      articleDynamic:{
-        articleId: dynamicId
+      $inc: {
+        articleNum: -1
       }
-    }
-  }, { new: true })
-  .select('-password -username')
-  .exec((err, data) => {
-    if (err) return res.status(503).send('err')
-    Article.deleteOne({articleId: dynamicId},(err)=>{
-      if(err) return res.status(500).send('err')
-      res.status(200).send(data)
+    }, { new: true })
+    .select('-password -username')
+    .exec((err, data) => {
+      if (err) return res.status(503).send('err')
+      Article.deleteOne({articleId: dynamicId},(err)=>{
+        if(err) return res.status(500).send('err')
+        res.status(200).send(data)
+      })
     })
-  })
+  
+  }else{
 
+    Author.findOneAndUpdate({authorId}, {
+      $pull: {
+        personalDynamic:{
+          personalId: dynamicId
+        }
+      },
+      $inc: {
+        personalNum: -1
+      }
+    }, { new: true })
+    .select('-password -username')
+    .exec((err, data) => {
+      if (err) return res.status(503).send('err')
+      Article.deleteOne({articleId: dynamicId},(err)=>{
+        if(err) return res.status(500).send('err')
+        res.status(200).send(data)
+      })
+    })
+
+  }
+ 
   
 })
 module.exports = route
